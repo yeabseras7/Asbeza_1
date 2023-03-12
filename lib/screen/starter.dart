@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../provider/provider.dart';
 import 'home.dart';
 
 class St extends StatefulWidget {
@@ -14,7 +15,8 @@ class _StState extends State<St> {
     return Scaffold(
       body: Center(
           child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
+                // food = (await ApiServiceProvider().fetchFood())!;
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Home()));
               },

@@ -7,15 +7,16 @@ import '../bloc/home_bloc/home_event.dart';
 import '../bloc/home_bloc/home_state.dart';
 import '../model/food.dart';
 import 'history.dart';
+import 'home.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class History extends StatefulWidget {
+  const History({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<History> createState() => _HistoryState();
 }
 
-class _HomeState extends State<Home> {
+class _HistoryState extends State<History> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
         iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
         title: const Text(
-          "Asbeza",
+          "History",
           style: TextStyle(
             color: Colors.black,
           ),
@@ -44,7 +45,7 @@ class _HomeState extends State<Home> {
         // backgroundColor: Colors.grey,
         child: ListView(
           padding: EdgeInsets.zero,
-          children: [
+          children: <Widget>[
             SizedBox(
               height: 250,
               child: DrawerHeader(
@@ -129,7 +130,6 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-            Text("data")
           ],
         ),
       ),
@@ -137,14 +137,15 @@ class _HomeState extends State<Home> {
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is FoodInitiate) {
-            return Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  BlocProvider.of<HomeBloc>(context).add(GetPressed());
-                },
-                child: const Text("Home"),
+            return const Center(
+                child: Text(
+              "NO HISTORY TO SHOW!\n TOTAL: 0\$",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
               ),
-            );
+            ));
           }
 
           if (state is FoodLoading) {
@@ -153,84 +154,61 @@ class _HomeState extends State<Home> {
             );
           } else if (state is FoodSuccess) {
             // List list = state.food;
-            return Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 20,
+
+            if (state.history.isEmpty) {
+              return const Center(
+                  child: Text(
+                "NO HISTORY TO SHOW!\n TOTAL: 0\$",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
                 ),
-                const Text("Recent Entry"),
-                SingleChildScrollView(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 17),
-                    height: 100,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 7,
-                        itemBuilder: (BuildContext context, int index) {
-                          final category = state.food[index];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                  width: 70,
-                                  height: 65,
-                                  margin: const EdgeInsets.only(right: 15),
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: NetworkImage(category.image),
-                                          fit: BoxFit.cover),
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(5))),
-                                  child: const Text('')),
-                              // Padding(
-                              //   padding: const EdgeInsets.only(right: 15),
-                              //   child: Text(
-                              //     category.title,
-                              //     style: const TextStyle(fontSize: 15),
-                              //   ),
-                              // )
-                            ],
-                          );
-                        }),
+              ));
+            } else {
+              num TotalPrice = 0;
+              // ignore: no_leading_underscores_for_local_identifiers
+              void _incrementCounter() {
+                for (var element in state.history) {
+                  TotalPrice += element.price;
+                }
+              }
+
+              _incrementCounter();
+
+              return Column(
+                children: <Widget>[
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    Tab(
-                      icon: Icon(Icons.food_bank),
-                      text: "All",
-                    ),
-                    Tab(
-                      icon: Icon(Icons.food_bank),
-                      text: "All",
-                    ),
-                    Tab(
-                      icon: Icon(Icons.food_bank),
-                      text: "All",
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: GridView.builder(
-                      itemCount: state.food.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        childAspectRatio: 0.75,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: GridView.builder(
+                        itemCount: state.history.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemBuilder: (context, index) =>
+                            ItemCard(category: state.history[index]),
                       ),
-                      itemBuilder: (context, index) =>
-                          ItemCard(category: state.food[index]),
                     ),
                   ),
-                )
-              ],
-            );
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "TOTAL: \$${TotalPrice.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ],
+              );
+            }
           }
 
           return Container();
@@ -277,12 +255,6 @@ class ItemCard extends StatelessWidget {
             "\$${category.price}",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          IconButton(
-              onPressed: () {
-                BlocProvider.of<HomeBloc>(context)
-                    .add(HistoryEvent(foods: category));
-              },
-              icon: const Icon(Icons.shopping_basket))
         ],
       ),
     );

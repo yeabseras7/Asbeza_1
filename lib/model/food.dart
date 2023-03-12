@@ -1,32 +1,36 @@
-import 'nutrient.dart';
-
-class Food {
-  String foodId;
-  String uri;
-  String label;
+class Item {
+  num id;
+  String title;
+  num price;
+  String description;
   String category;
-  String categoryLabel;
   String image;
-  Nutrient nutrient;
 
-  Food(
-      {required this.foodId,
-      required this.uri,
-      required this.label,
-      required this.category,
-      required this.categoryLabel,
-      required this.image,
-      required this.nutrient});
+  Item({
+    required this.id,
+    required this.title,
+    required this.price,
+    required this.description,
+    required this.category,
+    required this.image,
+  });
 
-  factory Food.fromJson(Map<String, dynamic> parsedJson) {
-    return Food(
-      foodId: parsedJson['foodId'],
-      uri: parsedJson['uri'],
-      label: parsedJson['label'],
-      category: parsedJson['category'],
-      categoryLabel: parsedJson['categoryLabel'],
-      image: parsedJson['image'],
-      nutrient: parsedJson['nutrient'],
+  factory Item.fromJson(Map<String, dynamic> parsedjson) {
+    return Item(
+      id: parsedjson['id'],
+      title: parsedjson['title'],
+      price: parsedjson['price'],
+      description: parsedjson['description'],
+      category: parsedjson['category'],
+      image: parsedjson['image'],
     );
+  }
+
+  static List? foodList(List food) {
+    List foods = [];
+    for (var i = 0; i < food.length; i++) {
+      foods.add(Item.fromJson(food[i]));
+    }
+    return foods;
   }
 }
