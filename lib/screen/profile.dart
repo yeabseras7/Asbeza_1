@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mobile_number/mobile_number.dart';
 
 import 'history.dart';
 import 'home.dart';
@@ -11,6 +13,51 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  String _mobileNumber = '';
+  List<SimCard> _simCard = <SimCard>[];
+
+  @override
+  void initState() {
+    super.initState();
+    MobileNumber.listenPhonePermission((isPermissionGranted) {
+      if (isPermissionGranted) {
+        initMobileNumberState();
+      } else {}
+    });
+
+    initMobileNumberState();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initMobileNumberState() async {
+    if (!await MobileNumber.hasPhonePermission) {
+      await MobileNumber.requestPhonePermission;
+      return;
+    }
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      _mobileNumber = (await MobileNumber.mobileNumber)!;
+      _simCard = (await MobileNumber.getSimCards)!;
+    } on PlatformException catch (e) {
+      debugPrint("Failed to get mobile number because of '${e.message}'");
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {});
+  }
+
+  Widget fillCards() {
+    List<Widget> widgets = _simCard
+        .map((SimCard sim) => Text(
+            'Sim Card Number: (${sim.countryPhonePrefix}) - ${sim.number}\nCarrier Name: ${sim.carrierName}\nCountry Iso: ${sim.countryIso}\nDisplay Name: ${sim.displayName}\nSim Slot Index: ${sim.slotIndex}\n\n'))
+        .toList();
+    return Column(children: widgets);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,16 +179,8 @@ class _ProfileState extends State<Profile> {
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
+                  children: const <Widget>[
                     CircleAvatar(
-                      backgroundColor: Colors.blue.shade300,
-                      minRadius: 35.0,
-                      child: const Icon(
-                        Icons.call,
-                        size: 30.0,
-                      ),
-                    ),
-                    const CircleAvatar(
                       backgroundColor: Colors.white70,
                       minRadius: 60.0,
                       child: CircleAvatar(
@@ -175,8 +214,8 @@ class _ProfileState extends State<Profile> {
           ),
           Container(
             child: Column(
-              children: const <Widget>[
-                ListTile(
+              children: <Widget>[
+                const ListTile(
                   title: Text(
                     'Email',
                     style: TextStyle(
@@ -192,8 +231,25 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 ListTile(
+                  title: const Text(
+                    'Phone Number',
+                    style: TextStyle(
+                      color: Colors.lightBlue,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    '+$_mobileNumber',
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                const ListTile(
                   title: Text(
                     'GitHub',
                     style: TextStyle(
@@ -209,8 +265,8 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                Divider(),
-                ListTile(
+                const Divider(),
+                const ListTile(
                   title: Text(
                     'Linkedin',
                     style: TextStyle(

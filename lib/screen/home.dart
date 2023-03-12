@@ -129,7 +129,6 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-            Text("data")
           ],
         ),
       ),
@@ -256,8 +255,8 @@ class ItemCard extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: Container(
-              width: 140,
-              height: 140,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
                 image: DecorationImage(
