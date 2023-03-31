@@ -26,11 +26,41 @@ class Item {
     );
   }
 
-  static List? foodList(List food) {
+  factory Item.histfromJson(Map<String, dynamic> parsedJson) {
+    return Item(
+      id: parsedJson["id"],
+      title: parsedJson['title'],
+      description: parsedJson['description'],
+      price: parsedJson['price'],
+      image: parsedJson['image'],
+      category: parsedJson["category"],
+    );
+  }
+
+  toJson() {
+    Map<String, dynamic> json = {};
+    json['id'] = id;
+    json['title'] = title;
+    json['description'] = description;
+    json['price'] = price;
+    json['category'] = category;
+    json['image'] = image;
+    return json;
+  }
+
+  static List foodList(List food) {
     List foods = [];
     for (var i = 0; i < food.length; i++) {
       foods.add(Item.fromJson(food[i]));
     }
     return foods;
+  }
+
+  static List histList(List values) {
+    List items = [];
+    for (var i = 0; i < values.length; i++) {
+      items.add(Item.histfromJson(values[i]));
+    }
+    return items;
   }
 }

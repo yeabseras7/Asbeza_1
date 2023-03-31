@@ -35,10 +35,13 @@ dependencies:
     sdk: flutter
   http: ^0.13.5
   mobile_number: ^2.1.1
+  path_provider: ^2.0.14
+  sqflite: ^2.2.6
+  # bloc: ^8.1.1
+  # equatable: ^2.0.5
 
 dev_dependencies:
-  bloc: ^8.1.1
-  equatable: ^2.0.5
+  
   flutter_bloc: ^8.1.2
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

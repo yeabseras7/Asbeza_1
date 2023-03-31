@@ -136,22 +136,11 @@ class _HomeState extends State<Home> {
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is FoodInitiate) {
-            return Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  BlocProvider.of<HomeBloc>(context).add(GetPressed());
-                },
-                child: const Text("Home"),
-              ),
-            );
-          }
-
-          if (state is FoodLoading) {
+            BlocProvider.of<HomeBloc>(context).add(GetPressed());
             return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (state is FoodSuccess) {
-            // List list = state.food;
             return Column(
               children: <Widget>[
                 const SizedBox(
